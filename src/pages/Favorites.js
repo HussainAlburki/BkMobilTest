@@ -1,31 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
 import "./Favorites.css";
 
 export default function Favorites() {
   const [favorites, setFavorites] = useState([]);
 
-  useEffect(() => {
-    const items = [];
-    for (let key in localStorage) {
-      if (key.startsWith("favorite-")) {
-        items.push(JSON.parse(localStorage.getItem(key)));
-      }
-    }
+  const loadFavorites = useCallback(() => {
+    const items = Object.keys(localStorage)
+      .filter((key) => key.startsWith("favorite-"))
+      .map((key) => JSON.parse(localStorage.getItem(key)));
     setFavorites(items);
   }, []);
 
+  useEffect(() => {
+    loadFavorites();
+  }, [loadFavorites]);
+
   const removeFavorite = (title) => {
-    for (let key in localStorage) {
-      try {
-        const item = localStorage.getItem(key);
-        if (item && item.includes(title)) {
-          localStorage.removeItem(key);
-        }
-      } catch (e) {
-        console.error("Error removing favorite:", e);
-      }
+    const keyToRemove = Object.keys(localStorage).find(
+      (key) =>
+        key.startsWith("favorite-") && localStorage.getItem(key).includes(title)
+    );
+    if (keyToRemove) {
+      localStorage.removeItem(keyToRemove);
+      loadFavorites();
     }
-    setFavorites(favorites.filter((item) => item.title !== title));
   };
 
   return (
@@ -41,18 +40,18 @@ export default function Favorites() {
               <h3>{item.title}</h3>
               <p>{item.description}</p>
               <div className="button-group">
-                <a
-                  href={`/news/${index}`}
+                <Link
+                  to={`/news/${index}`}
                   onClick={() =>
                     localStorage.setItem(
-                      "news-article-" + index,
+                      `news-article-${index}`,
                       JSON.stringify(item)
                     )
                   }
                   className="details-btn"
                 >
                   Ayrıntılar
-                </a>
+                </Link>
 
                 <button
                   className="remove-btn"

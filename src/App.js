@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Home from "./pages/Home";
 import Favorites from "./pages/Favorites";
 import NewsDetail from "./pages/NewsDetail";
@@ -12,12 +12,12 @@ export default function App() {
       <nav className="navbar">
         <h2>BK MOBIL HABER</h2>
         <div>
-          <a href="/" className="nav-link">
+          <Link to="/" className="nav-link">
             Anasayfa
-          </a>
-          <a href="/favorites" className="nav-link">
+          </Link>
+          <Link to="/favorites" className="nav-link">
             Favoriler
-          </a>
+          </Link>
         </div>
       </nav>
       <Routes>

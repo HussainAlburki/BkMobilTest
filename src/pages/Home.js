@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import "./Home.css";
@@ -7,27 +7,29 @@ export default function Home() {
   const [news, setNews] = useState([]);
   const [query, setQuery] = useState("");
 
-  useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        const response = await axios.get(
-          `https://newsapi.org/v2/everything?q=${query || "latest"}&apiKey=${
-            process.env.REACT_APP_NEWS_API_KEY
-          }`
-        );
-        setNews(response.data.articles);
-      } catch (error) {
-        console.error("Error fetching news:", error);
-      }
-    };
-    fetchNews();
+  const fetchNews = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        `https://newsapi.org/v2/everything?q=${query || "latest"}&apiKey=${
+          process.env.REACT_APP_NEWS_API_KEY
+        }`
+      );
+      setNews(response.data.articles);
+    } catch (error) {
+      console.error("Error fetching news:", error);
+    }
   }, [query]);
+
+  useEffect(() => {
+    fetchNews();
+  }, [fetchNews]);
 
   return (
     <div>
       <input
         type="text"
         placeholder="Search"
+        value={query}
         onChange={(e) => setQuery(e.target.value)}
         className="search-bar"
       />
@@ -43,7 +45,7 @@ export default function Home() {
               to={`/news/${index}`}
               onClick={() =>
                 localStorage.setItem(
-                  "news-article-" + index,
+                  `news-article-${index}`,
                   JSON.stringify(item)
                 )
               }
